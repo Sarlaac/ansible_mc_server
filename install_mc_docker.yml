@@ -1,0 +1,87 @@
+---
+- name: Install Docker Minecraft
+  hosts: localhost
+  become: true
+  vars_prompt:
+    - name: ansible_become_pass
+      prompt: "Enter become pass"
+
+  tasks:
+    - name: Install required system packages
+      ansible.builtin.apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3-pip
+          - virtualenv
+          - python3-setuptools
+          - ufw
+        state: present
+        update_cache: true
+
+    - name: Add Docker GPG apt Key
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker Repository
+      ansible.builtin.apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Update apt and install docker-ce
+      ansible.builtin.apt:
+        name: docker-ce
+        state: present
+        update_cache: true
+
+    - name: Install Docker Module for Python
+      ansible.builtin.pip:
+        name: docker
+
+    - name: Create portainer volumes
+      community.docker.docker_volume:
+        name: portainer_data
+
+    - name: Create portainer
+      community.docker.docker_container:
+        name: portainer
+        image: portainer/portainer-ce:latest
+        state: started
+        restart_policy: always
+        ports:
+          - "8000:8000"
+          - "9443:9443"
+        volumes:
+          - "/var/run/docker.sock:/var/run/docker.sock"
+          - "portainer_data:/data"
+
+    - name: Create minecraft
+      community.docker.docker_container:
+        name: minecraft
+        image: itzg/minecraft-server
+        state: started
+        restart_policy: always
+        ports:
+          - "25565:25565"
+        volumes:
+          - "{{ ansible_facts['ansible_user_dir'] }}/docker_mc_server:/data"
+        env:
+          TYPE: PAPER
+          EULA: "TRUE"
+
+    - name: UFW allow portainer, ssh, minecraft.
+      community.general.ufw:
+        rule: allow
+        port: '{{ item }}'
+      with_items:
+        - 8000
+        - 9443
+        - 22
+        - 25565
+
+    - name: Enable UFW firewall.
+      community.general.ufw:
+        state: enabled
