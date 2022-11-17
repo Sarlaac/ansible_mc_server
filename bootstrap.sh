@@ -1,10 +1,10 @@
 #!/bin/bash
 
+PATH=/home/$USER/.local/bin:$PATH
 sudo apt install git python3 python3-pip -y
 python3 -m pip install --upgrade pip
 python3 -m pip install --user ansible
 python3 -m pip install --user ansible-lint
-PATH=/home/$USER/.local/bin:$PATH
 git clone https://github.com/Sarlaac/ansible_mc_server.git
 cd ansible_mc_server
 
