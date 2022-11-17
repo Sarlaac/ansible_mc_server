@@ -2,6 +2,7 @@
 
 if [ $USER == "root" ]; then
     echo "Please run as a user with sudo privledges, do NOT run as root"
+    exit
 fi
 
 PATH=/home/$USER/.local/bin:$PATH
