@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ $USER == "root" ]; then
+    echo "Please run as a user with sudo privledges, do NOT run as root"
+fi
+
 PATH=/home/$USER/.local/bin:$PATH
 sudo apt install git python3 python3-pip -y
 python3 -m pip install --upgrade pip
