@@ -1,9 +1,12 @@
 #!/bin/bash
 
 if [ $USER == "root" ]; then
-    echo "Please run as a user with sudo privledges, do NOT run as root"
+    echo "Please run as a user with sudo privledges, not as root"
     exit
 fi
+
+echo "This will install Python and Ansible."
+read -p "use Ctrl+C to abort, or enter to continue.."
 
 PATH=/home/$USER/.local/bin:$PATH
 sudo apt install git python3 python3-pip -y
@@ -15,8 +18,4 @@ cd ansible_mc_server
 
 echo "Minecraft server is configured to used 8GB memory by default"
 echo "Search for and edit MEMORY value if the server doesn't have at least 10GB memory."
-echo "Run: ansible-playbook install_mc_docker.yml"
-echo "Become password is sudo user password"
-echo "Minecraft server files installed to /home/docker/docker_mc_server"
-echo ""
-echo "IMPORTANT: when the playbook completes connect to the server on https://server_ip:9443 and set portainer password"
+echo "Now run: ansible-playbook install_mc_docker.yml"
