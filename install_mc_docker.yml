@@ -4,7 +4,7 @@
   become: true
   vars_prompt:
     - name: ansible_become_pass
-      prompt: "Enter become pass"
+      prompt: "Enter sudo password"
 
   tasks:
     - name: Install required system packages
@@ -86,3 +86,11 @@
     - name: Enable UFW firewall.
       community.general.ufw:
         state: enabled
+        
+    - name: Finished, writing instructions.
+      ansible.builtin.debug:
+        msg:
+        - "Minecraft server files are located at /home/docker/docker_mc_server"
+        - "UFW firewall is active and blocking everything except SSH, Portainer, Minecraft."
+        - "Portainer is running at https://server_ip:9443, use a browser to login and change the password immediately."
+        - "Portainer will lockdown if the password isn't set."
